@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace RecreationalHazards.API.Items
 {
     [CustomItem(ItemType.Adrenaline)]
-    internal class Heroin : DrugItem
+    public class Heroin : DrugItem
     {
         public override uint Id { get; set; } = 2;
         public override string Name { get; set; } = "Heroin Injection";

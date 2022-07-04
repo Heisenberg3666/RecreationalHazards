@@ -1,4 +1,5 @@
-﻿using Exiled.Loader;
+﻿using Exiled.API.Features;
+using Exiled.Loader;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,8 @@ namespace RecreationalHazards.API
 
             Assembly exiledAssembly = Loader.GetPlugin(nameof(RecreationalHazards)).Assembly;
             Type[] itemTypes = exiledAssembly.GetTypes()
-                .Where(x => x.Namespace == nameof(RecreationalHazards) + ".API.Items")
+                .Where(x => x.Namespace == nameof(RecreationalHazards) + ".API.Items"
+                && x.IsSubclassOf(typeof(DrugItem)))
                 .ToArray();
 
             foreach (Type itemType in itemTypes)

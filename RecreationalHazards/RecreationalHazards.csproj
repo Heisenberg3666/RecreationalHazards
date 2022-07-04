@@ -118,7 +118,6 @@
     <Compile Include="API\Items\Heroin.cs" />
     <Compile Include="API\RecreationalHazardsApi.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="Events\ServerEvents.cs" />
     <Compile Include="RecreationalHazards.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

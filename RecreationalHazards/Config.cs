@@ -8,5 +8,6 @@ namespace RecreationalHazards
         public bool IsEnabled { get; set; } = true;
 
         public Alcohol Alcohol { get; set; } = new Alcohol();
+        public Heroin Heroin { get; set; } = new Heroin();
     }
 }
