@@ -115,6 +115,7 @@
     <Compile Include="API\Entities\EffectProperties.cs" />
     <Compile Include="API\Enums\ConsumptionStage.cs" />
     <Compile Include="API\Items\Alcohol.cs" />
+    <Compile Include="API\Items\Heroin.cs" />
     <Compile Include="API\RecreationalHazardsApi.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Events\ServerEvents.cs" />
