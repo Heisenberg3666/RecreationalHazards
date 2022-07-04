@@ -1,0 +1,12 @@
+﻿using Exiled.API.Interfaces;
+using RecreationalHazards.API.Items;
+
+namespace RecreationalHazards
+{
+    public class Config : IConfig
+    {
+        public bool IsEnabled { get; set; } = true;
+
+        public Alcohol Alcohol { get; set; } = new Alcohol();
+    }
+}
