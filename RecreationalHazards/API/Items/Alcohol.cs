@@ -33,6 +33,10 @@ namespace RecreationalHazards.API.Items
 
         public override int MaximumUse { get; set; } = 5;
         public override int StandardAmount { get; set; } = 2;
+        public override int AddictionAmount { get; set; } = 2;
+        public override float AddictionTime { get; set; } = 20f;
+        public override string AddictionPrompt { get; set; } = "You have become <color=red>addicted</color>. Drink more alcohol to satiate your addiction.";
+        public override string AddictionDropMessage { get; set; } = "Are you sure you want to give up drinking?";
 
         public override Dictionary<ConsumptionStage, List<EffectProperties>> Effects { get; set; } = new Dictionary<ConsumptionStage, List<EffectProperties>>()
         {
@@ -40,9 +44,27 @@ namespace RecreationalHazards.API.Items
             {
                 new EffectProperties()
                 {
+                    EffectType = EffectType.Blinded,
+                    ActivationTime = 0f,
+                    ActiveTime = 120f
+                },
+                new EffectProperties()
+                {
                     EffectType = EffectType.Deafened,
                     ActivationTime = 0f,
-                    ActiveTime = 10f
+                    ActiveTime = 120f
+                },
+                new EffectProperties()
+                {
+                    EffectType = EffectType.Disabled,
+                    ActivationTime = 0f,
+                    ActiveTime = 120f
+                },
+                new EffectProperties()
+                {
+                    EffectType = EffectType.Exhausted,
+                    ActivationTime = 0f,
+                    ActiveTime = 120f
                 }
             },
             [ConsumptionStage.Standard] = new List<EffectProperties>()
@@ -51,7 +73,13 @@ namespace RecreationalHazards.API.Items
                 {
                     EffectType = EffectType.Concussed,
                     ActivationTime = 0f,
-                    ActiveTime = 10f
+                    ActiveTime = 120f
+                },
+                new EffectProperties()
+                {
+                    EffectType = EffectType.Exhausted,
+                    ActivationTime = 0f,
+                    ActiveTime = 120f
                 }
             },
             [ConsumptionStage.Overdose] = new List<EffectProperties>()
@@ -60,8 +88,42 @@ namespace RecreationalHazards.API.Items
                 {
                     EffectType = EffectType.Poisoned,
                     ActivationTime = 0f,
-                    ActiveTime = 10f
+                    ActiveTime = 600f
+                },
+                new EffectProperties()
+                {
+                    EffectType = EffectType.Blinded,
+                    ActivationTime = 0f,
+                    ActiveTime = 600f
+                },
+                new EffectProperties()
+                {
+                    EffectType = EffectType.Deafened,
+                    ActivationTime = 0f,
+                    ActiveTime = 600f
+                },
+                new EffectProperties()
+                {
+                    EffectType = EffectType.Amnesia,
+                    ActivationTime = 0f,
+                    ActiveTime = 600f
                 }
+            }
+        };
+
+        public override List<EffectProperties> AddictionEffects { get; set; } = new List<EffectProperties>()
+        {
+            new EffectProperties()
+            {
+                EffectType = EffectType.Bleeding,
+                ActivationTime = 0f,
+                ActiveTime = 600f
+            },
+            new EffectProperties()
+            {
+                EffectType = EffectType.Burned,
+                ActivationTime = 0f,
+                ActiveTime = 600f
             }
         };
 
@@ -100,9 +162,28 @@ namespace RecreationalHazards.API.Items
             if (!Check(e.Player.CurrentItem))
                 return;
 
-            IncreaseDrugCount(nameof(Alcohol), e.Player);
+            int usedDrugs = RecreationalHazards.Instance.Api.TotalDrugsUsed[nameof(Alcohol)][e.Player.Id];
 
+            if (usedDrugs > AddictionAmount)
+                foreach (EffectProperties effectProperty in AddictionEffects)
+                    e.Player.DisableEffect(effectProperty.EffectType);
+
+            IncreaseDrugCount(nameof(Alcohol), e.Player);
             StartEffects(GetConsumptionStage(nameof(Alcohol), e.Player), e.Player);
+
+            if (usedDrugs++ > AddictionAmount)
+            {
+                Timing.CallDelayed(AddictionTime, () =>
+                {
+                    foreach (EffectProperties effectProperty in AddictionEffects)
+                    {
+                        Timing.CallDelayed(effectProperty.ActivationTime,
+                            () => e.Player.EnableEffect(effectProperty.EffectType, effectProperty.ActiveTime));
+                    }
+
+                    e.Player.ShowHint(AddictionPrompt, 5f);
+                });
+            }
         }
     }
 }
