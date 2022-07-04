@@ -32,9 +32,7 @@ namespace RecreationalHazards.API.Items
         };
 
         public override int MaximumUse { get; set; } = 5;
-        public override string AddictionMessage { get; set; } = "Are you sure you want to quit?";
-        public override int AmountForAddiction { get; set; } = 4;
-        public override float TimeForWithdrawal { get; set; } = 20f;
+        public override int StandardAmount { get; set; } = 2;
 
         public override Dictionary<ConsumptionStage, List<EffectProperties>> Effects { get; set; } = new Dictionary<ConsumptionStage, List<EffectProperties>>()
         {
@@ -56,15 +54,6 @@ namespace RecreationalHazards.API.Items
                     ActiveTime = 10f
                 }
             },
-            [ConsumptionStage.Withdrawal] = new List<EffectProperties>()
-            {
-                new EffectProperties()
-                {
-                    EffectType = EffectType.Hemorrhage,
-                    ActivationTime = 0f,
-                    ActiveTime = 10f
-                }
-            },
             [ConsumptionStage.Overdose] = new List<EffectProperties>()
             {
                 new EffectProperties()
@@ -78,6 +67,7 @@ namespace RecreationalHazards.API.Items
 
         protected override void SubscribeEvents()
         {
+            Exiled.Events.Handlers.Player.Verified += OnVerified;
             Exiled.Events.Handlers.Player.ChangingRole += OnChangingRole;
             Exiled.Events.Handlers.Player.UsedItem += OnUsedItem;
 
@@ -86,33 +76,23 @@ namespace RecreationalHazards.API.Items
 
         protected override void UnsubscribeEvents()
         {
+            Exiled.Events.Handlers.Player.Verified -= OnVerified;
             Exiled.Events.Handlers.Player.ChangingRole -= OnChangingRole;
             Exiled.Events.Handlers.Player.UsedItem -= OnUsedItem;
 
             base.UnsubscribeEvents();
         }
 
-        protected override void OnDropping(DroppingItemEventArgs e)
+        private void OnVerified(VerifiedEventArgs e)
         {
-            DrugStatistics drugStats = RecreationalHazards.Instance.Api.PlayerStatistics[e.Player.Id]
-                .FirstOrDefault(x => x.DrugType == nameof(Alcohol));
-
-            if (drugStats.ConsumptionStage == ConsumptionStage.Withdrawal
-                && !string.IsNullOrEmpty(AddictionMessage))
-            {
-                e.Player.ShowHint(AddictionMessage);
-            }
-
-            base.OnDropping(e);
+            RecreationalHazards.Instance.Api.DrugsCurrentlyUsing[nameof(Alcohol)].Add(e.Player.Id, 0);
+            RecreationalHazards.Instance.Api.TotalDrugsUsed[nameof(Alcohol)].Add(e.Player.Id, 0);
         }
 
         private void OnChangingRole(ChangingRoleEventArgs e)
         {
-            RecreationalHazards.Instance.Api.PlayerStatistics[e.Player.Id]
-                .FirstOrDefault(x => x.DrugType == nameof(Alcohol)).DrugsTaken = 0;
-
-            RecreationalHazards.Instance.Api.PlayerStatistics[e.Player.Id]
-                .FirstOrDefault(x => x.DrugType == nameof(Alcohol)).DrugsCurrentlyOn = 0;
+            RecreationalHazards.Instance.Api.DrugsCurrentlyUsing[nameof(Alcohol)][e.Player.Id] = 0;
+            RecreationalHazards.Instance.Api.TotalDrugsUsed[nameof(Alcohol)][e.Player.Id] = 0;
         }
 
         private void OnUsedItem(UsedItemEventArgs e)
@@ -120,19 +100,9 @@ namespace RecreationalHazards.API.Items
             if (!Check(e.Player.CurrentItem))
                 return;
 
-            RecreationalHazards.Instance.Api.PlayerStatistics[e.Player.Id]
-                .FirstOrDefault(x => x.DrugType == nameof(Alcohol)).ConsumptionStage = CalculateConsumptionStage(nameof(Alcohol), e.Player);
-            RecreationalHazards.Instance.Api.PlayerStatistics[e.Player.Id]
-                .FirstOrDefault(x => x.DrugType == nameof(Alcohol)).DrugsCurrentlyOn++;
-            RecreationalHazards.Instance.Api.PlayerStatistics[e.Player.Id]
-                .FirstOrDefault(x => x.DrugType == nameof(Alcohol)).DrugsTaken++;
-            RecreationalHazards.Instance.Api.PlayerStatistics[e.Player.Id]
-                .FirstOrDefault(x => x.DrugType == nameof(Alcohol)).LastTaken = DateTime.UtcNow;
+            IncreaseDrugCount(nameof(Alcohol), e.Player);
 
-            DrugStatistics drugStats = RecreationalHazards.Instance.Api.PlayerStatistics[e.Player.Id]
-                .FirstOrDefault(x => x.DrugType == nameof(Alcohol));
-
-            StartEffects(drugStats.ConsumptionStage, e.Player);
+            StartEffects(GetConsumptionStage(nameof(Alcohol), e.Player), e.Player);
         }
     }
 }

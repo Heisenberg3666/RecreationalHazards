@@ -112,7 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\DrugItem.cs" />
-    <Compile Include="API\Entities\DrugStatistics.cs" />
     <Compile Include="API\Entities\EffectProperties.cs" />
     <Compile Include="API\Enums\ConsumptionStage.cs" />
     <Compile Include="API\Items\Alcohol.cs" />

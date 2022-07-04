@@ -4,7 +4,6 @@
     {
         FirstTime,
         Standard,
-        Withdrawal,
         Overdose
     }
 }
