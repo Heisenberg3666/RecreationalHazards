@@ -13,7 +13,7 @@ namespace RecreationalHazards.API.Items
     [CustomItem(ItemType.Painkillers)]
     public class LSD : DrugItem
     {
-        public override uint Id { get; set; } = 4;
+        public override uint Id { get; set; } = 5;
         public override string Name { get; set; } = "LSD";
         public override string Description { get; set; } = "Trip on this <color=red>L</color><color=green>S</color><color=blue>D</color> so hard that you fall into another dimension.";
         public override float Weight { get; set; } = 2.5f;
@@ -195,7 +195,5 @@ namespace RecreationalHazards.API.Items
                 });
             }
         }
-
-        private void
     }
 }
