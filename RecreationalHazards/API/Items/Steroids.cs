@@ -6,15 +6,19 @@ using Exiled.Events.EventArgs;
 using MEC;
 using RecreationalHazards.API.Entities;
 using RecreationalHazards.API.Enums;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace RecreationalHazards.API.Items
 {
     [CustomItem(ItemType.Adrenaline)]
-    public class Heroin : DrugItem
+    public class Steroids : DrugItem
     {
-        public override uint Id { get; set; } = 2;
-        public override string Name { get; set; } = "Heroin Injection";
+        public override uint Id { get; set; } = 3;
+        public override string Name { get; set; } = "Steroid Injection";
         public override string Description { get; set; } = "Find somewhere secluded and shoot up, just make sure you don't run out.";
         public override float Weight { get; set; } = 2.5f;
         public override SpawnProperties SpawnProperties { get; set; } = new SpawnProperties()
@@ -29,12 +33,12 @@ namespace RecreationalHazards.API.Items
             }
         };
 
-        public override int MaximumUse { get; set; } = 4;
+        public override int MaximumUse { get; set; } = 8;
         public override int StandardAmount { get; set; } = 2;
-        public override int AddictionAmount { get; set; } = 2;
+        public override int AddictionAmount { get; set; } = 4;
         public override float AddictionTime { get; set; } = 240f;
-        public override string AddictionPrompt { get; set; } = "You have become <color=red>addicted</color>. Shoot up to satiate your addiction (and to stop the ants crawling on you).";
-        public override string AddictionDropMessage { get; set; } = "Are you sure you want to give up heroin?";
+        public override string AddictionPrompt { get; set; } = "You have become <color=red>addicted</color>. Shoot up to satiate your addiction (and to become stronger).";
+        public override string AddictionDropMessage { get; set; } = "Are you sure you want to give up steroids?";
 
         public override Dictionary<ConsumptionStage, List<EffectProperties>> Effects { get; set; } = new Dictionary<ConsumptionStage, List<EffectProperties>>()
         {
@@ -42,13 +46,7 @@ namespace RecreationalHazards.API.Items
             {
                 new EffectProperties()
                 {
-                    EffectType = EffectType.Concussed,
-                    ActivationTime = 0f,
-                    ActiveTime = 120f
-                },
-                new EffectProperties()
-                {
-                    EffectType = EffectType.Deafened,
+                    EffectType = EffectType.BodyshotReduction,
                     ActivationTime = 0f,
                     ActiveTime = 120f
                 },
@@ -63,7 +61,13 @@ namespace RecreationalHazards.API.Items
             {
                 new EffectProperties()
                 {
-                    EffectType = EffectType.Concussed,
+                    EffectType = EffectType.BodyshotReduction,
+                    ActivationTime = 0f,
+                    ActiveTime = 120f
+                },
+                new EffectProperties()
+                {
+                    EffectType = EffectType.Invigorated,
                     ActivationTime = 0f,
                     ActiveTime = 120f
                 }
@@ -139,14 +143,14 @@ namespace RecreationalHazards.API.Items
 
         private void OnVerified(VerifiedEventArgs e)
         {
-            RecreationalHazards.Instance.Api.DrugsCurrentlyUsing[nameof(Heroin)].Add(e.Player.Id, 0);
-            RecreationalHazards.Instance.Api.TotalDrugsUsed[nameof(Heroin)].Add(e.Player.Id, 0);
+            RecreationalHazards.Instance.Api.DrugsCurrentlyUsing[nameof(Steroids)].Add(e.Player.Id, 0);
+            RecreationalHazards.Instance.Api.TotalDrugsUsed[nameof(Steroids)].Add(e.Player.Id, 0);
         }
 
         private void OnChangingRole(ChangingRoleEventArgs e)
         {
-            RecreationalHazards.Instance.Api.DrugsCurrentlyUsing[nameof(Heroin)][e.Player.Id] = 0;
-            RecreationalHazards.Instance.Api.TotalDrugsUsed[nameof(Heroin)][e.Player.Id] = 0;
+            RecreationalHazards.Instance.Api.DrugsCurrentlyUsing[nameof(Steroids)][e.Player.Id] = 0;
+            RecreationalHazards.Instance.Api.TotalDrugsUsed[nameof(Steroids)][e.Player.Id] = 0;
         }
 
         private void OnUsedItem(UsedItemEventArgs e)
@@ -154,14 +158,14 @@ namespace RecreationalHazards.API.Items
             if (!Check(e.Player.CurrentItem))
                 return;
 
-            int usedDrugs = RecreationalHazards.Instance.Api.TotalDrugsUsed[nameof(Heroin)][e.Player.Id];
+            int usedDrugs = RecreationalHazards.Instance.Api.TotalDrugsUsed[nameof(Steroids)][e.Player.Id];
 
             if (usedDrugs >= AddictionAmount)
                 foreach (EffectProperties effectProperty in AddictionEffects)
                     e.Player.DisableEffect(effectProperty.EffectType);
 
-            IncreaseDrugCount(nameof(Heroin), e.Player);
-            StartEffects(GetConsumptionStage(nameof(Heroin), e.Player), e.Player);
+            IncreaseDrugCount(nameof(Steroids), e.Player);
+            StartEffects(GetConsumptionStage(nameof(Steroids), e.Player), e.Player);
 
             if (usedDrugs++ >= AddictionAmount)
             {

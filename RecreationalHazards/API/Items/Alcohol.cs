@@ -6,9 +6,7 @@ using Exiled.Events.EventArgs;
 using MEC;
 using RecreationalHazards.API.Entities;
 using RecreationalHazards.API.Enums;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RecreationalHazards.API.Items
 {
@@ -164,14 +162,14 @@ namespace RecreationalHazards.API.Items
 
             int usedDrugs = RecreationalHazards.Instance.Api.TotalDrugsUsed[nameof(Alcohol)][e.Player.Id];
 
-            if (usedDrugs > AddictionAmount)
+            if (usedDrugs >= AddictionAmount)
                 foreach (EffectProperties effectProperty in AddictionEffects)
                     e.Player.DisableEffect(effectProperty.EffectType);
 
             IncreaseDrugCount(nameof(Alcohol), e.Player);
             StartEffects(GetConsumptionStage(nameof(Alcohol), e.Player), e.Player);
 
-            if (usedDrugs++ > AddictionAmount)
+            if (usedDrugs++ >= AddictionAmount)
             {
                 Timing.CallDelayed(AddictionTime, () =>
                 {
