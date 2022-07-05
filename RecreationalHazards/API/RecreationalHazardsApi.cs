@@ -1,18 +1,33 @@
-﻿using MEC;
-using RecreationalHazards.API.Entities;
+﻿using Exiled.API.Features;
+using Exiled.Loader;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace RecreationalHazards.API
 {
     public class RecreationalHazardsApi
     {
-        public Dictionary<int, List<DrugStatistics>> PlayerStatistics;
-        public Dictionary<string, List<CoroutineHandle>> Coroutines;
+        public Dictionary<string, Dictionary<int, int>> TotalDrugsUsed;
+        public Dictionary<string, Dictionary<int, int>> DrugsCurrentlyUsing;
 
         public RecreationalHazardsApi()
         {
-            PlayerStatistics = new Dictionary<int, List<DrugStatistics>>();
-            Coroutines = new Dictionary<string, List<CoroutineHandle>>();
+            TotalDrugsUsed = new Dictionary<string, Dictionary<int, int>>();
+            DrugsCurrentlyUsing = new Dictionary<string, Dictionary<int, int>>();
+
+            Assembly exiledAssembly = Loader.GetPlugin(nameof(RecreationalHazards)).Assembly;
+            Type[] itemTypes = exiledAssembly.GetTypes()
+                .Where(x => x.Namespace == nameof(RecreationalHazards) + ".API.Items"
+                && x.IsSubclassOf(typeof(DrugItem)))
+                .ToArray();
+
+            foreach (Type itemType in itemTypes)
+            {
+                TotalDrugsUsed.Add(itemType.Name, new Dictionary<int, int>());
+                DrugsCurrentlyUsing.Add(itemType.Name, new Dictionary<int, int>());
+            }
         }
     }
 }

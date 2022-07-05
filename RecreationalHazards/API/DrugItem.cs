@@ -1,11 +1,10 @@
 ﻿using Exiled.API.Features;
 using Exiled.CustomItems.API.Features;
+using Exiled.Events.EventArgs;
 using MEC;
 using RecreationalHazards.API.Entities;
 using RecreationalHazards.API.Enums;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RecreationalHazards.API
 {
@@ -15,26 +14,41 @@ namespace RecreationalHazards.API
         /// This is the maximum amount of a drug that you can have at one time.
         /// </summary>
         public virtual int MaximumUse { get; set; }
+
+        /// <summary>
+        /// This is the amount of drugs that it takes to become used to the effects.
+        /// </summary>
+        public virtual int StandardAmount { get; set; }
+
+        /// <summary>
+        /// This is the amount of drugs that it takes to become addicted.
+        /// </summary>
+        public virtual int AddictionAmount { get; set; }
+
+        /// <summary>
+        /// This is the time that a player can go - after having a drug and being addicted - without another drug.
+        /// </summary>
+        public virtual float AddictionTime { get; set; }
+
+        /// <summary>
+        /// The prompt that will be shown to a player to tell them to do more.
+        /// </summary>
+        public virtual string AddictionPrompt { get; set; }
+
+        /// <summary>
+        /// The message that will be shown to players that drop the drug.
+        /// </summary>
+        public virtual string AddictionDropMessage { get; set; }
         
-        /// <summary>
-        /// The message shown to the addicted player after dropping the drug.
-        /// </summary>
-        public virtual string AddictionMessage { get; set; }
-
-        /// <summary>
-        /// This is the amount needed to become addicted to the drug.
-        /// </summary>
-        public virtual int AmountForAddiction { get; set; }
-
-        /// <summary>
-        /// This is the amount of time it will take for the player to get withdrawal symptoms.
-        /// </summary>
-        public virtual float TimeForWithdrawal { get; set; }
-
         /// <summary>
         /// These are all the effects that can be given to the player depending on their consumption stage.
         /// </summary>
         public virtual Dictionary<ConsumptionStage, List<EffectProperties>> Effects { get; set; }
+
+        /// <summary>
+        /// These are the effects that will activate if a player decides to stop doing drugs.
+        /// </summary>
+        public virtual List<EffectProperties> AddictionEffects { get; set; }
 
         /// <summary>
         /// This gives the player the effects corresponding to their consumption stage.
@@ -58,39 +72,44 @@ namespace RecreationalHazards.API
             }
         }
 
-        public ConsumptionStage CalculateConsumptionStage(string itemName, Player player)
+        public void IncreaseDrugCount(string itemName, Player player)
         {
-            DrugStatistics drugStats = RecreationalHazards.Instance.Api.PlayerStatistics[player.Id]
-                .FirstOrDefault(x => x.DrugType == itemName);
+            RecreationalHazards.Instance.Api.DrugsCurrentlyUsing[itemName][player.Id]++;
+            RecreationalHazards.Instance.Api.TotalDrugsUsed[itemName][player.Id]++;
+        }
 
-            if (drugStats.DrugsCurrentlyOn > MaximumUse)
+        public ConsumptionStage GetConsumptionStage(string itemName, Player player)
+        {
+            int usingDrugs = RecreationalHazards.Instance.Api.DrugsCurrentlyUsing[itemName][player.Id];
+            int totalDrugs = RecreationalHazards.Instance.Api.TotalDrugsUsed[itemName][player.Id];
+
+            if (usingDrugs > MaximumUse)
                 return ConsumptionStage.Overdose;
-
-            if (drugStats.DrugsTaken >= AmountForAddiction)
-                return ConsumptionStage.Withdrawal;
-
-            if (drugStats.DrugsTaken < 1)
+            if (totalDrugs >= StandardAmount)
                 return ConsumptionStage.Standard;
 
             return ConsumptionStage.FirstTime;
         }
 
-        public IEnumerator<float> AddictionHandler(string itemName, Player player)
+        public float GetDrugTime(ConsumptionStage consumptionStage)
         {
-            while (true)
+            float time = 0;
+
+            foreach (EffectProperties effectProperty in Effects[consumptionStage])
             {
-                DrugStatistics drugStats = RecreationalHazards.Instance.Api.PlayerStatistics[player.Id]
-                    .FirstOrDefault(x => x.DrugType == itemName);
-
-                float secondsSinceDrug = (float)(DateTime.UtcNow - drugStats.LastTaken).TotalSeconds;
-
-                if (secondsSinceDrug > TimeForWithdrawal)
-                {
-                    StartEffects(ConsumptionStage.Withdrawal, player);
-                }
-
-                yield return Timing.WaitForOneFrame;
+                if ((effectProperty.ActiveTime + effectProperty.ActivationTime) > time)
+                    time = effectProperty.ActiveTime + effectProperty.ActivationTime;
             }
+
+            return time;
+        }
+
+        public virtual void OnDroppingItem(DroppingItemEventArgs e)
+        {
+            if (!Check(e.Item))
+                return;
+
+            e.Player.ShowHint(AddictionDropMessage, 5f);
         }
     }
 }

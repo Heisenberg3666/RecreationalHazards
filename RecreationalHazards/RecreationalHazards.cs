@@ -1,14 +1,12 @@
 ﻿using Exiled.API.Features;
 using Exiled.CustomItems.API.Features;
 using RecreationalHazards.API;
-using RecreationalHazards.Events;
 using System;
 
 namespace RecreationalHazards
 {
     public class RecreationalHazards : Plugin<Config>
     {
-        private ServerEvents _serverEvents;
 
         public static RecreationalHazards Instance;
         public RecreationalHazardsApi Api;
@@ -22,34 +20,20 @@ namespace RecreationalHazards
         {
             Instance = this;
             Api = new RecreationalHazardsApi();
-            _serverEvents = new ServerEvents();
 
             CustomItem.RegisterItems();
-            RegisterEvents();
 
             base.OnEnabled();
         }
 
         public override void OnDisabled()
         {
-            UnregisterEvents();
             CustomItem.UnregisterItems();
 
-            _serverEvents = null;
             Api = null;
             Instance = null;
 
             base.OnDisabled();
-        }
-
-        public void RegisterEvents()
-        {
-            _serverEvents.RegisterEvents();
-        }
-
-        public void UnregisterEvents()
-        {
-            _serverEvents.RegisterEvents();
         }
     }
 }

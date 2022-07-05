@@ -112,13 +112,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\DrugItem.cs" />
-    <Compile Include="API\Entities\DrugStatistics.cs" />
     <Compile Include="API\Entities\EffectProperties.cs" />
     <Compile Include="API\Enums\ConsumptionStage.cs" />
     <Compile Include="API\Items\Alcohol.cs" />
+    <Compile Include="API\Items\Cocaine.cs" />
+    <Compile Include="API\Items\CrystalMeth.cs" />
+    <Compile Include="API\Items\Heroin.cs" />
+    <Compile Include="API\Items\LSD.cs" />
+    <Compile Include="API\Items\Steroids.cs" />
     <Compile Include="API\RecreationalHazardsApi.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="Events\ServerEvents.cs" />
     <Compile Include="RecreationalHazards.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
