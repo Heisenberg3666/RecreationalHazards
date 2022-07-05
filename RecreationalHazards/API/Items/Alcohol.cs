@@ -166,8 +166,13 @@ namespace RecreationalHazards.API.Items
                 foreach (EffectProperties effectProperty in AddictionEffects)
                     e.Player.DisableEffect(effectProperty.EffectType);
 
+            ConsumptionStage consumptionStage = GetConsumptionStage(nameof(Alcohol), e.Player);
+
             IncreaseDrugCount(nameof(Alcohol), e.Player);
-            StartEffects(GetConsumptionStage(nameof(Alcohol), e.Player), e.Player);
+            StartEffects(consumptionStage, e.Player);
+
+            Timing.CallDelayed(GetDrugTime(consumptionStage),
+                () => RecreationalHazards.Instance.Api.DrugsCurrentlyUsing[nameof(Alcohol)][e.Player.Id]--);
 
             if (usedDrugs++ >= AddictionAmount)
             {

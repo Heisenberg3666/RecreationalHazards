@@ -91,6 +91,19 @@ namespace RecreationalHazards.API
             return ConsumptionStage.FirstTime;
         }
 
+        public float GetDrugTime(ConsumptionStage consumptionStage)
+        {
+            float time = 0;
+
+            foreach (EffectProperties effectProperty in Effects[consumptionStage])
+            {
+                if ((effectProperty.ActiveTime + effectProperty.ActivationTime) > time)
+                    time = effectProperty.ActiveTime + effectProperty.ActivationTime;
+            }
+
+            return time;
+        }
+
         public virtual void OnDroppingItem(DroppingItemEventArgs e)
         {
             if (!Check(e.Item))
