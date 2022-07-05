@@ -12,5 +12,6 @@ namespace RecreationalHazards
         public Steroids Steroids { get; set; } = new Steroids();
         public CrystalMeth CrystalMeth { get; set; } = new CrystalMeth();
         public LSD LSD { get; set; } = new LSD();
+        public Cocaine Cocaine { get; set; } = new Cocaine();
     }
 }
