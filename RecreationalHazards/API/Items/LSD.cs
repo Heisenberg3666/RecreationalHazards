@@ -139,7 +139,6 @@ namespace RecreationalHazards.API.Items
 
         protected override void SubscribeEvents()
         {
-            Exiled.Events.Handlers.Player.Verified += OnVerified;
             Exiled.Events.Handlers.Player.ChangingRole += OnChangingRole;
             Exiled.Events.Handlers.Player.UsedItem += OnUsedItem;
 
@@ -148,17 +147,10 @@ namespace RecreationalHazards.API.Items
 
         protected override void UnsubscribeEvents()
         {
-            Exiled.Events.Handlers.Player.Verified -= OnVerified;
             Exiled.Events.Handlers.Player.ChangingRole -= OnChangingRole;
             Exiled.Events.Handlers.Player.UsedItem -= OnUsedItem;
 
             base.UnsubscribeEvents();
-        }
-
-        private void OnVerified(VerifiedEventArgs e)
-        {
-            RecreationalHazards.Instance.Api.DrugsCurrentlyUsing[nameof(LSD)].Add(e.Player.Id, 0);
-            RecreationalHazards.Instance.Api.TotalDrugsUsed[nameof(LSD)].Add(e.Player.Id, 0);
         }
 
         private void OnChangingRole(ChangingRoleEventArgs e)
