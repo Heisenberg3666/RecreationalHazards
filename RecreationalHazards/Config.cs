@@ -6,6 +6,7 @@ namespace RecreationalHazards
     public class Config : IConfig
     {
         public bool IsEnabled { get; set; } = true;
+        public bool Debug { get; set; }
 
         public Alcohol Alcohol { get; set; } = new Alcohol();
         public Heroin Heroin { get; set; } = new Heroin();

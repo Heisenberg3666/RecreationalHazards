@@ -1,12 +1,11 @@
 ﻿using Exiled.API.Enums;
 using Exiled.API.Features.Attributes;
 using Exiled.API.Features.Spawn;
-using Exiled.CustomItems.API;
-using Exiled.Events.EventArgs;
 using MEC;
 using RecreationalHazards.API.Entities;
 using RecreationalHazards.API.Enums;
 using System.Collections.Generic;
+using Exiled.Events.EventArgs.Player;
 
 namespace RecreationalHazards.API.Items
 {
@@ -24,7 +23,7 @@ namespace RecreationalHazards.API.Items
                 new DynamicSpawnPoint()
                 {
                     Chance = 100,
-                    Location = SpawnLocation.InsideLocker
+                    Location = SpawnLocationType.InsideLocker
                 }
             }
         };
@@ -90,7 +89,7 @@ namespace RecreationalHazards.API.Items
                 },
                 new EffectProperties()
                 {
-                    EffectType = EffectType.Amnesia,
+                    EffectType = EffectType.AmnesiaVision,
                     ActivationTime = 0f,
                     ActiveTime = 600f
                 },

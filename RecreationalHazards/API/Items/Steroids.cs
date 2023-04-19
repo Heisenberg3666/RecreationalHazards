@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Exiled.Events.EventArgs.Player;
 
 namespace RecreationalHazards.API.Items
 {
@@ -28,7 +29,7 @@ namespace RecreationalHazards.API.Items
                 new DynamicSpawnPoint()
                 {
                     Chance = 100,
-                    Location = SpawnLocation.InsideLocker
+                    Location = SpawnLocationType.InsideLocker
                 }
             }
         };
@@ -94,7 +95,7 @@ namespace RecreationalHazards.API.Items
                 },
                 new EffectProperties()
                 {
-                    EffectType = EffectType.Amnesia,
+                    EffectType = EffectType.AmnesiaVision,
                     ActivationTime = 0f,
                     ActiveTime = 600f
                 },

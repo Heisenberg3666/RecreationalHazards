@@ -13,7 +13,7 @@ namespace RecreationalHazards
 
         public override string Name => "RecreationalHazards";
         public override string Author => "Heisenberg3666";
-        public override Version Version => new Version(1, 0, 0, 0);
+        public override Version Version => new Version(1, 0, 1, 0);
         public override Version RequiredExiledVersion => new Version(5, 2, 2);
 
         public override void OnEnabled()

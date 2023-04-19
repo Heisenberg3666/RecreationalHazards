@@ -1,10 +1,10 @@
 ﻿using Exiled.API.Features;
 using Exiled.CustomItems.API.Features;
-using Exiled.Events.EventArgs;
 using MEC;
 using RecreationalHazards.API.Entities;
 using RecreationalHazards.API.Enums;
 using System.Collections.Generic;
+using Exiled.Events.EventArgs.Player;
 
 namespace RecreationalHazards.API
 {
